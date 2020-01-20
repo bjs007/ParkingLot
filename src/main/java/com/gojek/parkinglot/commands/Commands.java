@@ -1,26 +1,27 @@
 package com.gojek.parkinglot.commands;
 
-import java.util.HashMap;
-import java.util.Map;
 
-public class Commands {
-    private static Map<String, Integer> commandsParameterMap = new HashMap<String, Integer>();
+public enum Commands{
 
-   public Commands(){
-       commandsParameterMap.put(Constants.CREATE_PARKING_LOT, 1);
-       commandsParameterMap.put(Constants.PARK, 2);
-       commandsParameterMap.put(Constants.LEAVE, 1);
-       commandsParameterMap.put(Constants.STATUS, 0);
-       commandsParameterMap.put(Constants.REG_NUMBER_FOR_CARS_WITH_COLOR, 1);
-       commandsParameterMap.put(Constants.SLOTS_NUMBER_FOR_CARS_WITH_COLOR, 1);
-       commandsParameterMap.put(Constants.SLOTS_NUMBER_FOR_REG_NUMBER, 1);
-    }
+    CREATE,PARK,LEAVE,STATUS, REG_NUMBERS, SLOT_COLOUR, SLOT_REG;
 
-    public void addCommand(String command, int id){
-        commandsParameterMap.put(command, id);
-    }
+    public static Commands getCommand(String comm){
+        if(Command.CREATE.equals(comm))
+            return CREATE;
+        else if(Command.PARK.equals(comm))
+            return PARK;
+        else if(Command.LEAVE.equals(comm))
+            return LEAVE;
+        else if(Command.STATUS.equals(comm))
+            return STATUS;
+        else if(Command.REG_NUMBERS.equals(comm))
+            return REG_NUMBERS;
+        else if(Command.SLOT_COLOUR.equals(comm))
+            return SLOT_COLOUR;
+        else if(Command.SLOT_REG.equals(comm))
+            return SLOT_REG;
+        else
+            return null;
 
-    public int getCommand(String command){
-       return commandsParameterMap.get(command);
     }
 }

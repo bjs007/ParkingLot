@@ -1,18 +1,16 @@
 package com.gojek.parkinglot;
 
+import com.gojek.parkinglot.exceptions.ParkingLotException;
 import com.gojek.parkinglot.model.Slot;
+import com.gojek.parkinglot.processors.ParkingLotProcessor;
 import com.gojek.parkinglot.service.ParkingLotService;
 
-public class Driver {
-    public static void main(String args[]){
-        ParkingLotService parkingLotService = new ParkingLotService();
-        parkingLotService.addParkingLot(6);
-        parkingLotService.parkCar("ABCD","RED", 1);
-        parkingLotService.parkCar("ABCE","RED", 1);
-        Slot slot = parkingLotService.searchCar("ABCD");
-        System.out.println(slot.getNumber());
+import java.util.Scanner;
 
-        Slot slot1 = parkingLotService.getCar("ABCE");
-        System.out.println(slot1.getNumber());
+public class Driver {
+    public static void main(String args[]) throws Exception {
+        ParkingLotProcessor parkingLotProcessor = new ParkingLotProcessor();
+        parkingLotProcessor.SetService(new ParkingLotService());
+        parkingLotProcessor.execute(args[0]);
     }
 }

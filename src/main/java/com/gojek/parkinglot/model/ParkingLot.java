@@ -71,12 +71,18 @@ public class ParkingLot {
         return parkingLotSlotMap.get(slotId);
     }
 
-    public Slot removeSlotForAVehicle(int slotId){
-        Slot slot = parkingLotSlotMap.remove(slotId);
-        return slot;
+    public void removeSlotForAVehicle(int slotId){
+        Slot slot = parkingLotSlotMap.get(slotId);
+        slot.setVehicle(null);
     }
 
+    public void addNearestAvailableSlot(int slotId){
+        int distance = parkingLotSlotMap.get(slotId).getDistance();
+        nearestAvailableSlotInParkingLotMapper.add(new SlotDistanceMapperClass(slotId, distance));
+
+    }
     public void removeVehicleFromParking(String registrationName){
         parkingLotSlotAllocationMap.remove(registrationName);
     }
+
 }

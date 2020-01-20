@@ -7,11 +7,9 @@ import com.gojek.parkinglot.model.Vehicle;
 import com.gojek.parkinglot.storage.InMemoryStorage;
 import com.gojek.parkinglot.storage.InMemoryStorageService;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeSet;
+import java.util.*;
 
-public class ParkingLotService {
+public class ParkingLotService implements BaseService{
     static int id = 1;
     static int defaultParkingLot = 1;
     static InMemoryStorage inMemoryStorage = InMemoryStorage.getInstance();
@@ -22,7 +20,7 @@ public class ParkingLotService {
     }
 
     public void parkCar(String registration, String color, int parkingLotId){
-        ParkingLot parkingLot = inMemoryStorage.getParkingLot(defaultParkingLot);
+        ParkingLot parkingLot = inMemoryStorage.getParkingLot(parkingLotId == -1 ?defaultParkingLot: parkingLotId);
         Slot slot = parkingLot.getNearestAvailableSlot();
         if(slot == null){
             System.out.println("No slot found");
@@ -40,7 +38,6 @@ public class ParkingLotService {
         for(ParkingLot parkingLot : parkingLots.values()){
             Slot slot =  parkingLot.getSlotForAVehicle(registration);
             if( slot != null){
-                System.out.println(slot.getNumber());
               //  parkingLot.removeSlotForAVehicle(slot.getNumber());
                 return slot;
             }
@@ -56,10 +53,28 @@ public class ParkingLotService {
             if( slot != null){
                 slot.setVehicle(null);
                 parkingLot.removeVehicleFromParking(registration);
+                parkingLot.addNearestAvailableSlot(slot.getNumber());
                 return slot;
             }
         }
 
         return null;
+    }
+
+
+    public List<Slot> getAavilableSlot(int parkingLotId){
+        ParkingLot parkingLot = inMemoryStorage.getParkingLot(parkingLotId == - 1? defaultParkingLot : parkingLotId);
+        Map<Integer, Slot> slotMap = parkingLot.getParkingLotSlotMap();
+        List<Slot> list = new ArrayList<>();
+        for(Slot sl : slotMap.values()){
+            list.add(sl);
+        }
+
+        return list;
+    }
+
+    public void freeSlot(int parkingLotId, int slotId){
+        ParkingLot parkingLot = inMemoryStorage.getParkingLot(parkingLotId == - 1? defaultParkingLot : parkingLotId);
+        parkingLot.removeSlotForAVehicle(slotId);
     }
 }
