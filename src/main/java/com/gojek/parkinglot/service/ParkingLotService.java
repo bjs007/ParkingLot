@@ -5,7 +5,6 @@ import com.gojek.parkinglot.model.ParkingLot;
 import com.gojek.parkinglot.model.Slot;
 import com.gojek.parkinglot.model.Vehicle;
 import com.gojek.parkinglot.storage.InMemoryStorage;
-import com.gojek.parkinglot.storage.InMemoryStorageService;
 
 import java.util.*;
 
@@ -15,22 +14,22 @@ public class ParkingLotService implements BaseService{
     static InMemoryStorage inMemoryStorage = InMemoryStorage.getInstance();
 
     public void addParkingLot(int size){
-        inMemoryStorage.addParkingLot(id, new ParkingLot(size));
+        inMemoryStorage.addParkingLot(id, new ParkingLot(id, size));
         id++;
     }
 
-    public void parkCar(String registration, String color, int parkingLotId){
+    public synchronized Slot parkCar(String registration, String color, int parkingLotId){
         ParkingLot parkingLot = inMemoryStorage.getParkingLot(parkingLotId == -1 ?defaultParkingLot: parkingLotId);
         Slot slot = parkingLot.getNearestAvailableSlot();
         if(slot == null){
-            System.out.println("No slot found");
-            return;
+//            System.out.println("No slot found");
+            return null;
         }
         Vehicle vehicle = new Car(registration, color);
         slot.setVehicle(vehicle);
         slot.setParkingLotId(parkingLot.getId());
         parkingLot.setSlotForAVehicle(registration, slot.getNumber());
-
+        return slot;
     }
 
     public Slot searchCar(String registration){
@@ -46,7 +45,7 @@ public class ParkingLotService implements BaseService{
         return null;
     }
 
-    public Slot getCar(String registration){
+    public synchronized Slot getCar(String registration){
         Map<Integer, ParkingLot> parkingLots = inMemoryStorage.getParkingLots();
         for(ParkingLot parkingLot : parkingLots.values()){
             Slot slot =  parkingLot.getSlotForAVehicle(registration);
@@ -76,5 +75,35 @@ public class ParkingLotService implements BaseService{
     public void freeSlot(int parkingLotId, int slotId){
         ParkingLot parkingLot = inMemoryStorage.getParkingLot(parkingLotId == - 1? defaultParkingLot : parkingLotId);
         parkingLot.removeSlotForAVehicle(slotId);
+    }
+
+    public List<String> getRegistrationNumberOfCarsWithColor(String color){
+        List<String> list = new ArrayList<>();
+        Map<Integer, ParkingLot> parkingLots = inMemoryStorage.getParkingLots();
+        for(ParkingLot parkingLot : parkingLots.values()){
+            Map<Integer, Slot> slots = parkingLot.getParkingLotSlotMap();
+            for(Slot slot : slots.values()){
+                if(slot.getVehicle() != null && slot.getVehicle().getColor().equalsIgnoreCase(color)){
+                    list.add(slot.getVehicle().getRegistrationNumber());
+                }
+            }
+        }
+
+        return list;
+    }
+
+    public List<Slot> getSlotsOfCarsWithColor(String color){
+        List<Slot> list = new ArrayList<>();
+        Map<Integer, ParkingLot> parkingLots = inMemoryStorage.getParkingLots();
+        for(ParkingLot parkingLot : parkingLots.values()){
+            Map<Integer, Slot> slots = parkingLot.getParkingLotSlotMap();
+            for(Slot slot : slots.values()){
+                if(slot.getVehicle() != null && slot.getVehicle().getColor().equalsIgnoreCase(color)){
+                    list.add(slot);
+                }
+            }
+        }
+
+        return list;
     }
 }

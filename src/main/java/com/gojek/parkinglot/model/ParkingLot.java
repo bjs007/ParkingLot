@@ -1,11 +1,9 @@
 package com.gojek.parkinglot.model;
 
-import com.gojek.parkinglot.storage.InMemoryStorage;
 import com.gojek.parkinglot.storage.NearestSlotIdComparator;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 public class ParkingLot {
@@ -14,8 +12,8 @@ public class ParkingLot {
     Map<String , Integer> parkingLotSlotAllocationMap;
     TreeSet<SlotDistanceMapperClass>  nearestAvailableSlotInParkingLotMapper;
     int size = 0;
-    int currentSize = 0;
-    public ParkingLot(int size){
+
+    public ParkingLot(int id, int size){
         this.size = size;
         parkingLotSlotMap = new HashMap<Integer, Slot>();
         nearestAvailableSlotInParkingLotMapper = new TreeSet<SlotDistanceMapperClass>(new NearestSlotIdComparator());
@@ -51,8 +49,12 @@ public class ParkingLot {
     }
 
     public Slot getNearestAvailableSlot(){
-        SlotDistanceMapperClass slotDistanceMapperClass = nearestAvailableSlotInParkingLotMapper.first();
-        nearestAvailableSlotInParkingLotMapper.remove(slotDistanceMapperClass);
+        SlotDistanceMapperClass slotDistanceMapperClass = null;
+        if(nearestAvailableSlotInParkingLotMapper.size() > 0){
+            slotDistanceMapperClass = nearestAvailableSlotInParkingLotMapper.first();
+            nearestAvailableSlotInParkingLotMapper.remove(slotDistanceMapperClass);
+        }
+
         if(slotDistanceMapperClass == null){
             return null;
         }
@@ -74,6 +76,7 @@ public class ParkingLot {
     public void removeSlotForAVehicle(int slotId){
         Slot slot = parkingLotSlotMap.get(slotId);
         slot.setVehicle(null);
+        nearestAvailableSlotInParkingLotMapper.add(new SlotDistanceMapperClass(slotId, slot.getDistance()));
     }
 
     public void addNearestAvailableSlot(int slotId){
