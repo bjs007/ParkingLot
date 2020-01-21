@@ -20,6 +20,10 @@ public class ParkingLotService implements BaseService{
 
     public synchronized Slot parkCar(String registration, String color, int parkingLotId){
         ParkingLot parkingLot = inMemoryStorage.getParkingLot(parkingLotId == -1 ?defaultParkingLot: parkingLotId);
+        if(parkingLot == null){
+            System.out.println("Parking lot has not been initialized");
+            System.exit(1);
+        }
         Slot slot = parkingLot.getNearestAvailableSlot();
         if(slot == null){
 //            System.out.println("No slot found");
@@ -77,6 +81,11 @@ public class ParkingLotService implements BaseService{
         parkingLot.removeSlotForAVehicle(slotId);
     }
 
+    public int getNumberOfFreeSlot(int parkingLotId){
+        ParkingLot parkingLot = inMemoryStorage.getParkingLot(parkingLotId == - 1? defaultParkingLot : parkingLotId);
+        return parkingLot.getNearestAvailableSlotInParkingLotMapper().size();
+    }
+
     public List<String> getRegistrationNumberOfCarsWithColor(String color){
         List<String> list = new ArrayList<>();
         Map<Integer, ParkingLot> parkingLots = inMemoryStorage.getParkingLots();
@@ -105,5 +114,9 @@ public class ParkingLotService implements BaseService{
         }
 
         return list;
+    }
+
+    public ParkingLot get(int id){
+        return inMemoryStorage.getParkingLot( id == -1 ? defaultParkingLot : id);
     }
 }

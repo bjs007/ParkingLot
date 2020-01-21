@@ -48,6 +48,10 @@ public class ParkingLot {
         this.parkingLotSlotAllocationMap = parkingLotSlotAllocationMap;
     }
 
+    public TreeSet<SlotDistanceMapperClass> getNearestAvailableSlotInParkingLotMapper() {
+        return nearestAvailableSlotInParkingLotMapper;
+    }
+
     public Slot getNearestAvailableSlot(){
         SlotDistanceMapperClass slotDistanceMapperClass = null;
         if(nearestAvailableSlotInParkingLotMapper.size() > 0){
@@ -86,6 +90,10 @@ public class ParkingLot {
     }
     public void removeVehicleFromParking(String registrationName){
         parkingLotSlotAllocationMap.remove(registrationName);
+    }
+
+    public int getSize(){
+        return size;
     }
 
 }
